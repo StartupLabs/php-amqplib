@@ -45,7 +45,7 @@ class AMQPReader
         return $this->rawread($n);
     }
 
-    private function rawread($n)
+    protected function rawread($n)
     {
         if ($this->sock) {
             $res = '';
