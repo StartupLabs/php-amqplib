@@ -9,14 +9,12 @@ use PhpAmqpLib\Exception\AMQPOutOfBoundsException;
 
 class AMQPReader
 {
-    public function __construct($str, $sock=null)
+    private $io = null;
+
+    public function __construct($str, $io = null)
     {
         $this->str = $str;
-        if ($sock !== null) {
-            $this->sock = new BufferedInput($sock);
-        } else {
-            $this->sock = null;
-        }
+        $this->io = $io;
         $this->offset = 0;
 
         $this->bitcount = $this->bits = 0;
@@ -35,8 +33,8 @@ class AMQPReader
 
     public function close()
     {
-        if($this->sock)
-            $this->sock->close();
+        if($this->io)
+            $this->io->close();
     }
 
     public function read($n)
@@ -46,24 +44,10 @@ class AMQPReader
         return $this->rawread($n);
     }
 
-    private function rawread($n)
+    protected function rawread($n)
     {
-        if ($this->sock) {
-            $res = '';
-            $read = 0;
-
-            while ($read < $n && !feof($this->sock->real_sock()) &&
-                    (false !== ($buf = fread($this->sock->real_sock(), $n - $read)))) {
-
-                $read += strlen($buf);
-                $res .= $buf;
-            }
-
-            if (strlen($res)!=$n) {
-                throw new AMQPRuntimeException("Error reading data. Received " .
-                                     strlen($res) . " instead of expected $n bytes");
-            }
-
+        if ($this->io) {
+            $res = $this->io->read($n);
             $this->offset += $n;
         } else {
             if(strlen($this->str) < $n)

@@ -2,7 +2,7 @@
 
 namespace PhpAmqpLib\Channel;
 
-use PhpAmqpLib\Connection\AMQPConnection;
+use PhpAmqpLib\Connection\AbstractConnection;
 use PhpAmqpLib\Exception\AMQPOutOfBoundsException;
 use PhpAmqpLib\Exception\AMQPRuntimeException;
 use PhpAmqpLib\Helper\MiscHelper;
@@ -35,7 +35,7 @@ class AbstractChannel
 
     protected $methodMap;
 
-    public function __construct(AMQPConnection $connection, $channel_id)
+    public function __construct(AbstractConnection $connection, $channel_id)
     {
         $this->connection = $connection;
         $this->channel_id = $channel_id;
